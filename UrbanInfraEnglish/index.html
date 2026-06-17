@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UrbanInfra English - Tiếng Anh Kỹ Thuật Hạ Tầng Đô Thị</title>
+  
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: ['selector', '[data-theme="dark"]'],
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            outfit: ['Outfit', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Custom CSS for theme overrides and custom animations -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen flex flex-col transition-colors duration-300">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 w-full border-b border-[var(--border)] bg-[var(--bg-card)]/80 backdrop-blur-md transition-colors duration-300">
+    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <!-- Logo SVG -->
+        <div class="p-2 bg-gradient-to-tr from-cyan-500 to-teal-500 rounded-lg text-white shadow-md shadow-cyan-500/20">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+          </svg>
+        </div>
+        <div>
+          <h1 class="font-outfit font-extrabold text-xl leading-none tracking-tight bg-gradient-to-r from-[var(--text-main)] to-cyan-500 bg-clip-text text-transparent">
+            UrbanInfra English
+          </h1>
+          <p class="text-[10px] font-medium text-[var(--text-muted)] tracking-wider uppercase">KD Textbook 2026</p>
+        </div>
+      </div>
+      
+      <div class="flex items-center space-x-4">
+        <!-- Dark Mode Toggle -->
+        <button id="theme-toggle" class="p-2.5 rounded-lg border border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" aria-label="Toggle Theme">
+          <!-- Icon injected dynamically by app.js -->
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main View Area -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-8 flex flex-col">
+    
+    <!-- DASHBOARD VIEW -->
+    <section id="dashboard-view" class="flex-1 flex flex-col justify-center">
+      <div class="text-center max-w-2xl mx-auto mb-10">
+        <h2 class="font-outfit font-extrabold text-3xl md:text-4xl text-[var(--text-main)] mb-3">
+          Học Thuật Ngữ Kỹ Thuật Hạ Tầng
+        </h2>
+        <p class="text-sm md:text-base text-[var(--text-muted)] leading-relaxed">
+          Phần mềm học từ vựng và luyện dịch học thuật dựa trên nội dung sách giáo khoa <strong class="text-[var(--accent)] font-semibold">KD Textbook 2026</strong>. Chọn một chương học bên dưới để bắt đầu luyện tập.
+        </p>
+      </div>
+      
+      <!-- Chapters Grid -->
+      <div id="chapter-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto w-full">
+        <!-- Chapters dynamic injected by app.js -->
+      </div>
+    </section>
+
+    <!-- QUIZ VIEW -->
+    <section id="quiz-view" class="hidden flex-1 flex flex-col items-center justify-center">
+      <div class="w-full max-w-2xl">
+        
+        <!-- Navigation bar at the top of Quiz -->
+        <div class="flex items-center justify-between mb-6">
+          <button id="btn-back" class="flex items-center space-x-2 text-sm font-semibold text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors px-3 py-1.5 rounded-lg border border-[var(--border)] hover:bg-slate-100 dark:hover:bg-slate-850">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            <span>Quay lại Dashboard</span>
+          </button>
+          
+          <div class="text-right">
+            <span id="quiz-progress-text" class="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">Câu hỏi 0 / 0</span>
+          </div>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 mb-8 overflow-hidden">
+          <div id="quiz-progress-fill" class="bg-gradient-to-r from-cyan-500 to-teal-500 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+        </div>
+        
+        <!-- CHAPTER HEADER TITLE -->
+        <h3 id="quiz-chapter-title" class="text-sm font-bold text-[var(--accent)] uppercase tracking-wider mb-4 text-center"></h3>
+        
+        <!-- VOCABULARY CARD -->
+        <div id="vocab-card" class="hidden">
+          <div class="mb-8 text-center">
+            <span class="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">Dịch sang tiếng Việt</span>
+            <h4 id="vocab-eng" class="font-outfit font-extrabold text-3xl md:text-4xl mt-4 tracking-tight text-[var(--text-main)]"></h4>
+          </div>
+          
+          <div class="space-y-4">
+            <input type="text" id="vocab-input" placeholder="Nhập bản dịch tiếng Việt tại đây..." autocomplete="off">
+            
+            <button id="btn-vocab-check" class="w-full py-3 px-4 rounded-lg bg-[var(--accent)] text-slate-900 font-bold hover:bg-[var(--accent-hover)] transition focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/50">
+              Kiểm tra
+            </button>
+            
+            <button id="btn-vocab-next" class="hidden w-full py-3 px-4 rounded-lg bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-bold hover:opacity-90 transition focus:outline-none">
+              Tiếp theo
+            </button>
+          </div>
+          
+          <!-- Feedback block -->
+          <div id="vocab-feedback" class="hidden mt-6 p-4 rounded-lg border border-[var(--border)]">
+            <!-- Dynamic feedback template -->
+          </div>
+        </div>
+        
+        <!-- SENTENCE CARD -->
+        <div id="sentence-card" class="hidden">
+          <div class="mb-6">
+            <span class="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider bg-amber-50 dark:bg-amber-950/20 px-3 py-1 rounded-full">Luyện dịch câu mẫu (Reading Section)</span>
+            <div class="mt-4 p-4 md:p-6 bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-[var(--border)]">
+              <p id="sentence-eng" class="text-base md:text-lg font-medium leading-relaxed text-[var(--text-main)]"></p>
+            </div>
+          </div>
+          
+          <div class="space-y-4">
+            <textarea id="sentence-input" rows="4" class="w-full px-4 py-3 rounded-lg border border-[var(--border)] bg-[var(--bg-app)] text-[var(--text-main)] placeholder-slate-400 dark:placeholder-slate-500 font-medium focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 transition resize-none" placeholder="Viết bản dịch thực hành của bạn tại đây (không bắt buộc kiểm tra từ ngữ tự động)..."></textarea>
+            
+            <div class="flex space-x-3">
+              <button id="btn-sentence-sample" class="flex-1 py-3 px-4 rounded-lg border border-[var(--border)] hover:bg-slate-100 dark:hover:bg-slate-800 text-[var(--text-main)] font-semibold transition focus:outline-none">
+                Xem bản dịch mẫu
+              </button>
+              <button id="btn-sentence-next" class="flex-1 py-3 px-4 rounded-lg bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-bold hover:opacity-90 transition focus:outline-none">
+                Tiếp tục
+              </button>
+            </div>
+            
+            <!-- Sample translation display -->
+            <div id="sentence-translation-block" class="hidden p-5 bg-[var(--accent-light)] dark:bg-cyan-950/20 rounded-xl border border-[var(--accent)]/20 mt-4">
+              <span class="text-xs font-bold text-[var(--accent)] uppercase tracking-wider">Bản dịch mẫu học thuật</span>
+              <p id="sentence-sample-translation" class="text-sm mt-2 leading-relaxed font-semibold text-[var(--text-main)]"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- RESULTS CARD -->
+        <div id="results-card" class="hidden">
+          <div class="mb-6 flex flex-col items-center">
+            <div class="p-4 bg-teal-50 dark:bg-cyan-950/40 rounded-full mb-4">
+              <svg class="w-12 h-12 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 0 013.138 3.138 3.42 0 00.806 1.946 3.42 0 010 4.438 3.42 0 00-.806 1.946 3.42 0 01-3.138 3.138 3.42 0 00-1.946.806 3.42 0 01-4.438 0 3.42 0 00-1.946-.806 3.42 0 01-3.138-3.138 3.42 0 00-.806-1.946 3.42 0 010-4.438 3.42 0 00.806-1.946 3.42 0 013.138-3.138z" />
+              </svg>
+            </div>
+            <h4 class="font-outfit font-extrabold text-2xl text-[var(--text-main)]">Hoàn thành chương học!</h4>
+            <div id="results-percentage" class="text-5xl font-black text-[var(--accent)] mt-4 mb-2">0%</div>
+            <p id="results-score" class="text-[var(--text-muted)] max-w-sm"></p>
+          </div>
+          
+          <div class="flex flex-col sm:flex-row gap-3 mt-6">
+            <button id="btn-restart" class="flex-1 py-3 px-4 rounded-lg bg-[var(--accent)] text-slate-900 font-bold hover:bg-[var(--accent-hover)] transition focus:outline-none">
+              Luyện tập lại
+            </button>
+            <button onclick="app.showDashboard()" class="flex-1 py-3 px-4 rounded-lg border border-[var(--border)] hover:bg-slate-100 dark:hover:bg-slate-800 text-[var(--text-main)] font-semibold transition focus:outline-none">
+              Về Trang chủ
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-[var(--border)] py-6 bg-[var(--bg-card)] transition-colors duration-300 text-center text-xs text-[var(--text-muted)]">
+    <div class="max-w-6xl mx-auto px-4">
+      <p class="font-medium">Hạ Tầng Đô Thị Bền Vững - Phát Triển Bằng Công Nghệ</p>
+      <p class="mt-1 font-bold text-red-500">LÊ GIA BẢO KD23/A2</p>
+    </div>
+  </footer>
+
+  <!-- Application script loads -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
