@@ -75,6 +75,7 @@ class QuizApp {
     this.streakDung = 0;
     this.streakSai = 0;
     this.theme = localStorage.getItem('urban_infra_theme') || 'light';
+    this._memeGeneration = 0; // Guards against stale image callbacks
     
     this.init();
   }
@@ -590,62 +591,78 @@ class QuizApp {
   showMeme(imageUrl, isCorrect) {
     if (!imageUrl) return;
     
-    // Preload the image in a detached Image object.
-    // We do NOT touch the visible <img> or show the card until the image is ready.
-    const preloader = new Image();
+    // Increment generation to invalidate any pending previous preload callbacks
+    const gen = ++this._memeGeneration;
     
-    const revealMeme = () => {
-      // Now the image is fully decoded — swap src and show everything at once
+    // Prepare all text content while the card is still hidden
+    if (isCorrect) {
+      this.memeStreakBadge.textContent = `Streak: ${this.streakDung} 🔥`;
+      this.memeStreakBadge.className = "mb-3 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400";
+      
+      const positiveMessages = [
+        "Quá đỉnh! Tiếp tục phát huy nhé! 🚀",
+        "Tuyệt vời ông mặt trời! ☀️",
+        "Bạn là thiên tài kỹ thuật hạ tầng! 🤓",
+        "Không thể ngăn cản! Chuỗi đúng đang tăng! 💪"
+      ];
+      this.memeMessage.textContent = positiveMessages[Math.min(this.streakDung - 1, positiveMessages.length - 1)];
+    } else {
+      this.memeStreakBadge.textContent = `Streak sai: ${this.streakSai} 😿`;
+      this.memeStreakBadge.className = "mb-3 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400";
+      
+      const negativeMessages = [
+        "Đừng nản chí, làm lại nào! 💪",
+        "Hơi tiếc một chút, cố lên nhé! ❤️",
+        "Ôi không, mèo con đang khóc kìa! 😿",
+        "Tập trung hơn ở câu tiếp theo nhé! 🧠"
+      ];
+      this.memeMessage.textContent = negativeMessages[Math.min(this.streakSai - 1, negativeMessages.length - 1)];
+    }
+    
+    // Use a detached Image to preload + decode before touching the visible <img>
+    const preloader = new Image();
+    preloader.src = imageUrl;
+    
+    // decode() returns a promise that resolves when the image is fully decoded
+    // and ready to be painted without any delay or flicker
+    const revealWhenReady = () => {
+      // Guard: if user already moved on (hideMeme incremented generation), abort
+      if (gen !== this._memeGeneration) return;
+      
+      // Set the visible image src — since preloader already decoded it,
+      // the browser serves it from cache instantly with zero flicker
       this.memeImage.src = imageUrl;
+      this.memeImage.style.opacity = '1';
       
-      // Set dynamic badge and encouraging/funny messages
-      if (isCorrect) {
-        this.memeStreakBadge.textContent = `Streak: ${this.streakDung} 🔥`;
-        this.memeStreakBadge.className = "mb-3 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400";
-        
-        const positiveMessages = [
-          "Quá đỉnh! Tiếp tục phát huy nhé! 🚀",
-          "Tuyệt vời ông mặt trời! ☀️",
-          "Bạn là thiên tài kỹ thuật hạ tầng! 🤓",
-          "Không thể ngăn cản! Chuỗi đúng đang tăng! 💪"
-        ];
-        this.memeMessage.textContent = positiveMessages[Math.min(this.streakDung - 1, positiveMessages.length - 1)];
-      } else {
-        this.memeStreakBadge.textContent = `Streak sai: ${this.streakSai} 😿`;
-        this.memeStreakBadge.className = "mb-3 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400";
-        
-        const negativeMessages = [
-          "Đừng nản chí, làm lại nào! 💪",
-          "Hơi tiếc một chút, cố lên nhé! ❤️",
-          "Ôi không, mèo con đang khóc kìa! 😿",
-          "Tập trung hơn ở câu tiếp theo nhé! 🧠"
-        ];
-        this.memeMessage.textContent = negativeMessages[Math.min(this.streakSai - 1, negativeMessages.length - 1)];
-      }
-      
-      // Show meme card with animation — image is already loaded so no flash
+      // Reveal the card with bounce animation
       if (this.memeCard) {
-        this.memeImage.style.opacity = '1';
         this.memeCard.classList.remove('hidden');
         this.memeCard.classList.remove('animate-spring-bounce');
-        void this.memeCard.offsetWidth; // Trigger reflow
+        void this.memeCard.offsetWidth; // Force reflow to restart animation
         this.memeCard.classList.add('animate-spring-bounce');
       }
     };
     
-    preloader.onload = revealMeme;
-    preloader.onerror = revealMeme; // Still show card on error so UI isn't stuck
-    preloader.src = imageUrl;
-    
-    // If the browser already has it cached, onload may have fired synchronously
-    // but we don't need to double-call — the onload handler covers both cases.
+    // Try the modern decode() API first — guarantees zero-flicker rendering
+    if (typeof preloader.decode === 'function') {
+      preloader.decode()
+        .then(revealWhenReady)
+        .catch(revealWhenReady); // Show even on decode error
+    } else {
+      // Fallback for older browsers without decode()
+      preloader.onload = revealWhenReady;
+      preloader.onerror = revealWhenReady;
+    }
   }
 
   hideMeme() {
+    // Increment generation to cancel any pending preload callbacks
+    this._memeGeneration++;
+    
     if (this.memeCard) {
       this.memeCard.classList.add('hidden');
       this.memeCard.classList.remove('animate-spring-bounce');
-      // Clear the image immediately so there is no stale frame visible next time
+      // Immediately clear the image — no transition, no stale frame
       this.memeImage.style.opacity = '0';
       this.memeImage.removeAttribute('src');
     }
