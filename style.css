@@ -138,18 +138,82 @@ body {
 }
 
 .card-chapter {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   border: 1px solid var(--border);
 }
 
 .card-chapter:hover {
-  transform: translateY(-4px);
+  transform: translateY(-5px);
   border-color: var(--accent);
-  box-shadow: 0 12px 20px -8px rgb(0 0 0 / 0.15);
+  box-shadow: 0 10px 20px -5px rgba(8, 145, 178, 0.3), 0 0 15px 1px rgba(8, 145, 178, 0.15);
 }
 
 [data-theme="dark"] .card-chapter:hover {
-  box-shadow: 0 12px 20px -8px rgba(34, 211, 238, 0.15);
+  box-shadow: 0 10px 20px -5px rgba(34, 211, 238, 0.4), 0 0 15px 2px rgba(34, 211, 238, 0.2);
+}
+
+/* Hiệu ứng Bàn chân mèo trượt lên khi hover thẻ */
+.card-chapter::after {
+  content: '🐾';
+  position: absolute;
+  bottom: -30px;
+  right: 16px;
+  font-size: 1.6rem;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  pointer-events: none;
+}
+
+.card-chapter:hover::after {
+  bottom: 12px;
+  opacity: 0.85;
+}
+
+/* User Rank Tag Styling */
+#user-rank {
+  background: linear-gradient(135deg, rgba(8, 145, 178, 0.1) 0%, rgba(20, 184, 166, 0.1) 100%);
+  border: 1px solid rgba(8, 145, 178, 0.2);
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+
+[data-theme="dark"] #user-rank {
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.15) 0%, rgba(45, 212, 191, 0.15) 100%);
+  border: 1px solid rgba(34, 211, 238, 0.3);
+}
+
+/* Mascot Speech Bubble overrides */
+.mascot-bubble {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--card-shadow);
+}
+
+.bubble-arrow {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border) !important;
+}
+
+/* Cat-ified Progress Bar */
+.progress-container-cat {
+  position: relative;
+}
+
+.progress-bar-cat {
+  position: relative;
+}
+
+.cat-head-icon {
+  position: absolute;
+  right: -8px;
+  top: -6px;
+  font-size: 14px;
+  line-height: 1;
+  pointer-events: none;
+  transition: all 0.5s ease;
+  display: inline-block;
 }
 
 /* Spring Bounce Animation for Meme Modal & Cards */

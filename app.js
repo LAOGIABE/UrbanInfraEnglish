@@ -65,6 +65,19 @@ const MEME_RESOURCES = {
   ]
 };
 
+const MASCOT_QUOTES = [
+  'Quy hoạch lại cái nết lười đi rồi hẵng quy hoạch đô thị nha sen!',
+  'Hệ thống thoát nước có xịn bằng nước mắt sen lúc chạy deadline không?',
+  'Chưa trộn xong bê tông mà dám lướt web? Nay trừ 1 lon pate!',
+  'Giao thông thành phố tắc nghẽn sao bằng não sen lúc dịch từ vựng!',
+  'Học lẹ ra làm Kỹ sư trưởng rồi mua súp thưởng cho trẫm nha!',
+  'Đô thị hóa nhanh quá mất chỗ cào móng rồi. Mau xây công viên cho trẫm!',
+  'Điện lưới chập chờn sao bằng cái nết của trẫm lúc đói. Học lẹ đi!',
+  'Đường vào tim crush lắm ổ gà quá hả? Học đi trẫm dạy cách trải nhựa!',
+  'Nền móng có vững mà từ vựng lủng thì cũng sập công trình thôi!',
+  'Thiết kế hệ thống cấp nước xong thì nhớ cấp quyền ăn pate cho trẫm nha!'
+];
+
 class QuizApp {
   constructor() {
     this.currentChapter = null;
@@ -108,6 +121,45 @@ class QuizApp {
       const img = new Image();
       img.src = url;
     });
+  }
+
+  updateUserRank() {
+    let totalProgress = 0;
+    chaptersData.forEach(chapter => {
+      const progress = parseInt(localStorage.getItem(`urban_infra_progress_ch_${chapter.id}`)) || 0;
+      totalProgress += progress;
+    });
+    
+    const averageProgress = Math.round(totalProgress / chaptersData.length);
+    let rankName = '';
+    let rankIcon = '';
+    
+    if (averageProgress >= 0 && averageProgress <= 20) {
+      rankName = 'Mèo bốc vác';
+      rankIcon = '🧱';
+    } else if (averageProgress >= 21 && averageProgress <= 50) {
+      rankName = 'Mèo lái máy xúc';
+      rankIcon = '🚜';
+    } else if (averageProgress >= 51 && averageProgress <= 80) {
+      rankName = 'Thợ đụng Mèo';
+      rankIcon = '🛠️';
+    } else {
+      rankName = 'Kỹ sư trưởng Mèo';
+      rankIcon = '🏗️';
+    }
+    
+    const rankTag = document.getElementById('user-rank');
+    if (rankTag) {
+      rankTag.innerHTML = `<span class="mr-1">${rankIcon}</span> <span>${rankName}</span> <span class="ml-1 text-[10px] opacity-75">(${averageProgress}%)</span>`;
+    }
+  }
+
+  showMascotGreeting() {
+    const speechSpan = document.getElementById('mascot-speech');
+    if (speechSpan) {
+      const randomIndex = Math.floor(Math.random() * MASCOT_QUOTES.length);
+      speechSpan.textContent = MASCOT_QUOTES[randomIndex];
+    }
   }
 
   cacheDom() {
@@ -266,6 +318,9 @@ class QuizApp {
   }
 
   renderDashboard() {
+    this.updateUserRank();
+    this.showMascotGreeting();
+
     this.chapterGrid.innerHTML = '';
     
     // SVGs mapping for beautiful cards
@@ -313,8 +368,10 @@ class QuizApp {
             <span class="text-[var(--text-muted)]">Tiến độ hoàn thành</span>
             <span class="font-bold text-[var(--accent)]">${savedProgress}%</span>
           </div>
-          <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2">
-            <div class="bg-[var(--accent)] h-2 rounded-full transition-all duration-500" style="width: ${savedProgress}%"></div>
+          <div class="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-2 progress-container-cat">
+            <div class="bg-[var(--accent)] h-2 rounded-full transition-all duration-500 relative progress-bar-cat" style="width: ${savedProgress}%">
+              <span class="cat-head-icon">🐱</span>
+            </div>
           </div>
         </div>
       `;
@@ -543,6 +600,9 @@ class QuizApp {
     if (completionPercentage > previousBest) {
       localStorage.setItem(`urban_infra_progress_ch_${this.currentChapter.id}`, completionPercentage);
     }
+
+    // Update user rank dynamically on Header
+    this.updateUserRank();
 
     // Play random celebration video directly inside results card
     const videos = MEME_RESOURCES.videos;
