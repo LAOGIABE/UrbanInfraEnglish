@@ -573,7 +573,23 @@ class QuizApp {
   showMeme(imageUrl, isCorrect) {
     if (!imageUrl) return;
     
+    // Reset opacity to 0 immediately to prevent showing the old image while loading
+    this.memeImage.style.opacity = '0';
+    
+    this.memeImage.onload = () => {
+      this.memeImage.style.opacity = '1';
+    };
+    
+    this.memeImage.onerror = () => {
+      this.memeImage.style.opacity = '1'; // Fallback to show the container even if error
+    };
+    
     this.memeImage.src = imageUrl;
+    
+    // If the image is already cached, show it instantly
+    if (this.memeImage.complete) {
+      this.memeImage.style.opacity = '1';
+    }
     
     // Set dynamic badge and encouraging/funny messages
     if (isCorrect) {
@@ -615,6 +631,9 @@ class QuizApp {
   hideMeme() {
     if (this.memeCard) {
       this.memeCard.classList.add('hidden');
+      // Reset image src and opacity
+      this.memeImage.style.opacity = '0';
+      this.memeImage.src = '';
     }
   }
 
