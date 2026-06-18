@@ -89,6 +89,23 @@ class QuizApp {
       this.bindEvents();
       this.renderDashboard();
       this.updateThemeToggleUI();
+      this.preloadAllMemeImages();
+    });
+  }
+
+  // Preload all meme images into browser cache so they display instantly
+  preloadAllMemeImages() {
+    const allLists = [
+      ...MEME_RESOURCES.file1,
+      ...MEME_RESOURCES.file2,
+      ...MEME_RESOURCES.file3,
+      ...MEME_RESOURCES.file4,
+      ...MEME_RESOURCES.file5,
+      ...MEME_RESOURCES.file6
+    ];
+    allLists.forEach(url => {
+      const img = new Image();
+      img.src = url;
     });
   }
 
@@ -573,67 +590,64 @@ class QuizApp {
   showMeme(imageUrl, isCorrect) {
     if (!imageUrl) return;
     
-    // Reset opacity to 0 immediately to prevent showing the old image while loading
-    this.memeImage.style.opacity = '0';
+    // Preload the image in a detached Image object.
+    // We do NOT touch the visible <img> or show the card until the image is ready.
+    const preloader = new Image();
     
-    this.memeImage.onload = () => {
-      this.memeImage.style.opacity = '1';
+    const revealMeme = () => {
+      // Now the image is fully decoded — swap src and show everything at once
+      this.memeImage.src = imageUrl;
+      
+      // Set dynamic badge and encouraging/funny messages
+      if (isCorrect) {
+        this.memeStreakBadge.textContent = `Streak: ${this.streakDung} 🔥`;
+        this.memeStreakBadge.className = "mb-3 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400";
+        
+        const positiveMessages = [
+          "Quá đỉnh! Tiếp tục phát huy nhé! 🚀",
+          "Tuyệt vời ông mặt trời! ☀️",
+          "Bạn là thiên tài kỹ thuật hạ tầng! 🤓",
+          "Không thể ngăn cản! Chuỗi đúng đang tăng! 💪"
+        ];
+        this.memeMessage.textContent = positiveMessages[Math.min(this.streakDung - 1, positiveMessages.length - 1)];
+      } else {
+        this.memeStreakBadge.textContent = `Streak sai: ${this.streakSai} 😿`;
+        this.memeStreakBadge.className = "mb-3 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400";
+        
+        const negativeMessages = [
+          "Đừng nản chí, làm lại nào! 💪",
+          "Hơi tiếc một chút, cố lên nhé! ❤️",
+          "Ôi không, mèo con đang khóc kìa! 😿",
+          "Tập trung hơn ở câu tiếp theo nhé! 🧠"
+        ];
+        this.memeMessage.textContent = negativeMessages[Math.min(this.streakSai - 1, negativeMessages.length - 1)];
+      }
+      
+      // Show meme card with animation — image is already loaded so no flash
+      if (this.memeCard) {
+        this.memeImage.style.opacity = '1';
+        this.memeCard.classList.remove('hidden');
+        this.memeCard.classList.remove('animate-spring-bounce');
+        void this.memeCard.offsetWidth; // Trigger reflow
+        this.memeCard.classList.add('animate-spring-bounce');
+      }
     };
     
-    this.memeImage.onerror = () => {
-      this.memeImage.style.opacity = '1'; // Fallback to show the container even if error
-    };
+    preloader.onload = revealMeme;
+    preloader.onerror = revealMeme; // Still show card on error so UI isn't stuck
+    preloader.src = imageUrl;
     
-    this.memeImage.src = imageUrl;
-    
-    // If the image is already cached, show it instantly
-    if (this.memeImage.complete) {
-      this.memeImage.style.opacity = '1';
-    }
-    
-    // Set dynamic badge and encouraging/funny messages
-    if (isCorrect) {
-      this.memeStreakBadge.textContent = `Streak: ${this.streakDung} 🔥`;
-      this.memeStreakBadge.className = "mb-3 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400";
-      
-      const positiveMessages = [
-        "Quá đỉnh! Tiếp tục phát huy nhé! 🚀",
-        "Tuyệt vời ông mặt trời! ☀️",
-        "Bạn là thiên tài kỹ thuật hạ tầng! 🤓",
-        "Không thể ngăn cản! Chuỗi đúng đang tăng! 💪"
-      ];
-      this.memeMessage.textContent = positiveMessages[Math.min(this.streakDung - 1, positiveMessages.length - 1)];
-    } else {
-      this.memeStreakBadge.textContent = `Streak sai: ${this.streakSai} 😿`;
-      this.memeStreakBadge.className = "mb-3 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400";
-      
-      const negativeMessages = [
-        "Đừng nản chí, làm lại nào! 💪",
-        "Hơi tiếc một chút, cố lên nhé! ❤️",
-        "Ôi không, mèo con đang khóc kìa! 😿",
-        "Tập trung hơn ở câu tiếp theo nhé! 🧠"
-      ];
-      this.memeMessage.textContent = negativeMessages[Math.min(this.streakSai - 1, negativeMessages.length - 1)];
-    }
-    
-    // Show meme card
-    if (this.memeCard) {
-      this.memeCard.classList.remove('hidden');
-      this.memeCard.classList.remove('animate-spring-bounce');
-      void this.memeCard.offsetWidth; // Trigger reflow
-      this.memeCard.classList.add('animate-spring-bounce');
-    }
-
-    // Don't auto-focus meme button — let the vocabNextBtn keep focus
-    // so Enter key works naturally for the 2-beat flow
+    // If the browser already has it cached, onload may have fired synchronously
+    // but we don't need to double-call — the onload handler covers both cases.
   }
 
   hideMeme() {
     if (this.memeCard) {
       this.memeCard.classList.add('hidden');
-      // Reset image src and opacity
+      this.memeCard.classList.remove('animate-spring-bounce');
+      // Clear the image immediately so there is no stale frame visible next time
       this.memeImage.style.opacity = '0';
-      this.memeImage.src = '';
+      this.memeImage.removeAttribute('src');
     }
   }
 
