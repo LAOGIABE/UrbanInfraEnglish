@@ -3,65 +3,65 @@
 
 const MEME_RESOURCES = {
   file1: [
-    '../final/file 1/f1 (2).jpg',
-    '../final/file 1/f1 (3).jpg',
-    '../final/file 1/f1 (4).jpg',
-    '../final/file 1/f1 (5).jpg',
-    '../final/file 1/f1 (6).jpg',
-    '../final/file 1/f1.jpg'
+    './final/file 1/f1 (2).jpg',
+    './final/file 1/f1 (3).jpg',
+    './final/file 1/f1 (4).jpg',
+    './final/file 1/f1 (5).jpg',
+    './final/file 1/f1 (6).jpg',
+    './final/file 1/f1.jpg'
   ],
   file2: [
-    '../final/file 2/f2 (2).jpg',
-    '../final/file 2/f2 (3).jpg',
-    '../final/file 2/f2 (4).jpg',
-    '../final/file 2/f2 (5).jpg',
-    '../final/file 2/f2 (6).jpg',
-    '../final/file 2/f2 (7).jpg',
-    '../final/file 2/f2 (8).jpg',
-    '../final/file 2/f2 (9).jpg',
-    '../final/file 2/f2 (10).jpg',
-    '../final/file 2/f2.jpg'
+    './final/file 2/f2 (2).jpg',
+    './final/file 2/f2 (3).jpg',
+    './final/file 2/f2 (4).jpg',
+    './final/file 2/f2 (5).jpg',
+    './final/file 2/f2 (6).jpg',
+    './final/file 2/f2 (7).jpg',
+    './final/file 2/f2 (8).jpg',
+    './final/file 2/f2 (9).jpg',
+    './final/file 2/f2 (10).jpg',
+    './final/file 2/f2.jpg'
   ],
   file3: [
-    '../final/file 3/f3 (2).jpg',
-    '../final/file 3/f3 (3).jpg',
-    '../final/file 3/f3 (4).jpg',
-    '../final/file 3/f3 (5).jpg',
-    '../final/file 3/f3.jpg'
+    './final/file 3/f3 (2).jpg',
+    './final/file 3/f3 (3).jpg',
+    './final/file 3/f3 (4).jpg',
+    './final/file 3/f3 (5).jpg',
+    './final/file 3/f3.jpg'
   ],
   file4: [
-    '../final/file 4/f4 (2).jpg',
-    '../final/file 4/f4 (3).jpg',
-    '../final/file 4/f4 (4).jpg',
-    '../final/file 4/f4 (5).jpg',
-    '../final/file 4/f4.jpg'
+    './final/file 4/f4 (2).jpg',
+    './final/file 4/f4 (3).jpg',
+    './final/file 4/f4 (4).jpg',
+    './final/file 4/f4 (5).jpg',
+    './final/file 4/f4.jpg'
   ],
   file5: [
-    '../final/file 5/f5 (2).jpg',
-    '../final/file 5/f5 (3).jpg',
-    '../final/file 5/f5 (4).jpg',
-    '../final/file 5/f5 (5).jpg',
-    '../final/file 5/f5.jpg'
+    './final/file 5/f5 (2).jpg',
+    './final/file 5/f5 (3).jpg',
+    './final/file 5/f5 (4).jpg',
+    './final/file 5/f5 (5).jpg',
+    './final/file 5/f5.jpg'
   ],
   file6: [
-    '../final/file 6/f6 (2).jpg',
-    '../final/file 6/f6 (3).jpg',
-    '../final/file 6/f6 (4).jpg',
-    '../final/file 6/f6 (5).jpg',
-    '../final/file 6/f6 (6).jpg',
-    '../final/file 6/f6 (7).jpg',
-    '../final/file 6/f6 (8).jpg',
-    '../final/file 6/f6.jpg'
+    './final/file 6/f6 (2).jpg',
+    './final/file 6/f6 (3).jpg',
+    './final/file 6/f6 (4).jpg',
+    './final/file 6/f6 (5).jpg',
+    './final/file 6/f6 (6).jpg',
+    './final/file 6/f6 (7).jpg',
+    './final/file 6/f6 (8).jpg',
+    './final/file 6/f6.jpg'
   ],
   videos: [
-    '../final/video/1.mp4',
-    '../final/video/2.mp4',
-    '../final/video/3.mp4',
-    '../final/video/4.mp4',
-    '../final/video/5.mp4',
-    '../final/video/6.mp4',
-    '../final/video/7.mp4',
-    '../final/video/8.mp4'
+    './final/video/1.mp4',
+    './final/video/2.mp4',
+    './final/video/3.mp4',
+    './final/video/4.mp4',
+    './final/video/5.mp4',
+    './final/video/6.mp4',
+    './final/video/7.mp4',
+    './final/video/8.mp4'
   ]
 };
 
