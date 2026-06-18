@@ -79,8 +79,9 @@
     </section>
 
     <!-- QUIZ VIEW -->
-    <section id="quiz-view" class="hidden flex-1 flex flex-col items-center justify-center">
-      <div class="w-full max-w-2xl">
+    <section id="quiz-view" class="hidden flex-1 flex flex-col lg:flex-row items-center lg:items-start justify-center gap-8 py-4 w-full">
+      <!-- Left Column: Quiz Content -->
+      <div class="w-full max-w-2xl flex-shrink-0">
         
         <!-- Navigation bar at the top of Quiz -->
         <div class="flex items-center justify-between mb-6">
@@ -114,11 +115,11 @@
           <div class="space-y-4">
             <input type="text" id="vocab-input" placeholder="Nhập bản dịch tiếng Việt tại đây..." autocomplete="off">
             
-            <button id="btn-vocab-check" class="w-full py-3 px-4 rounded-lg bg-[var(--accent)] text-slate-900 font-bold hover:bg-[var(--accent-hover)] transition focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/50">
+            <button type="button" id="btn-vocab-check" class="w-full py-3 px-4 rounded-lg bg-[var(--accent)] text-slate-900 font-bold hover:bg-[var(--accent-hover)] transition focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/50">
               Kiểm tra
             </button>
             
-            <button id="btn-vocab-next" class="hidden w-full py-3 px-4 rounded-lg bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-bold hover:opacity-90 transition focus:outline-none">
+            <button type="button" id="btn-vocab-next" class="hidden w-full py-3 px-4 rounded-lg bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-bold hover:opacity-90 transition focus:outline-none">
               Tiếp theo
             </button>
           </div>
@@ -142,10 +143,10 @@
             <textarea id="sentence-input" rows="4" class="w-full px-4 py-3 rounded-lg border border-[var(--border)] bg-[var(--bg-app)] text-[var(--text-main)] placeholder-slate-400 dark:placeholder-slate-500 font-medium focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20 transition resize-none" placeholder="Viết bản dịch thực hành của bạn tại đây (không bắt buộc kiểm tra từ ngữ tự động)..."></textarea>
             
             <div class="flex space-x-3">
-              <button id="btn-sentence-sample" class="flex-1 py-3 px-4 rounded-lg border border-[var(--border)] hover:bg-slate-100 dark:hover:bg-slate-800 text-[var(--text-main)] font-semibold transition focus:outline-none">
+              <button type="button" id="btn-sentence-sample" class="flex-1 py-3 px-4 rounded-lg border border-[var(--border)] hover:bg-slate-100 dark:hover:bg-slate-800 text-[var(--text-main)] font-semibold transition focus:outline-none">
                 Xem bản dịch mẫu
               </button>
-              <button id="btn-sentence-next" class="flex-1 py-3 px-4 rounded-lg bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-bold hover:opacity-90 transition focus:outline-none">
+              <button type="button" id="btn-sentence-next" class="flex-1 py-3 px-4 rounded-lg bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-bold hover:opacity-90 transition focus:outline-none">
                 Tiếp tục
               </button>
             </div>
@@ -160,27 +161,51 @@
 
         <!-- RESULTS CARD -->
         <div id="results-card" class="hidden">
-          <div class="mb-6 flex flex-col items-center">
-            <div class="p-4 bg-teal-50 dark:bg-cyan-950/40 rounded-full mb-4">
-              <svg class="w-12 h-12 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 0 013.138 3.138 3.42 0 00.806 1.946 3.42 0 010 4.438 3.42 0 00-.806 1.946 3.42 0 01-3.138 3.138 3.42 0 00-1.946.806 3.42 0 01-4.438 0 3.42 0 00-1.946-.806 3.42 0 01-3.138-3.138 3.42 0 00-.806-1.946 3.42 0 010-4.438 3.42 0 00.806-1.946 3.42 0 013.138-3.138z" />
-              </svg>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            
+            <!-- Left Column: Statistics & Action Buttons -->
+            <div class="flex flex-col items-center md:items-start text-center md:text-left">
+              <div class="p-4 bg-teal-50 dark:bg-cyan-950/40 rounded-full mb-4 inline-block self-center md:self-start">
+                <svg class="w-12 h-12 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 0 013.138 3.138 3.42 0 00.806 1.946 3.42 0 010 4.438 3.42 0 00-.806 1.946 3.42 0 01-3.138 3.138 3.42 0 00-1.946.806 3.42 0 01-4.438 0 3.42 0 00-1.946-.806 3.42 0 01-3.138-3.138 3.42 0 00-.806-1.946 3.42 0 010-4.438 3.42 0 00.806-1.946 3.42 0 013.138-3.138z" />
+                </svg>
+              </div>
+              <h4 class="font-outfit font-extrabold text-2xl text-[var(--text-main)]">Hoàn thành chương học!</h4>
+              <div id="results-percentage" class="text-5xl font-black text-[var(--accent)] mt-4 mb-2">0%</div>
+              <p id="results-score" class="text-[var(--text-muted)] max-w-sm mb-6"></p>
+              
+              <div class="flex flex-col sm:flex-row gap-3 w-full">
+                <button type="button" id="btn-restart" class="flex-1 py-3 px-4 rounded-lg bg-[var(--accent)] text-slate-900 font-bold hover:bg-[var(--accent-hover)] transition focus:outline-none">
+                  Luyện tập lại
+                </button>
+                <button onclick="app.showDashboard()" class="flex-1 py-3 px-4 rounded-lg border border-[var(--border)] hover:bg-slate-100 dark:hover:bg-slate-800 text-[var(--text-main)] font-semibold transition focus:outline-none">
+                  Về Trang chủ
+                </button>
+              </div>
             </div>
-            <h4 class="font-outfit font-extrabold text-2xl text-[var(--text-main)]">Hoàn thành chương học!</h4>
-            <div id="results-percentage" class="text-5xl font-black text-[var(--accent)] mt-4 mb-2">0%</div>
-            <p id="results-score" class="text-[var(--text-muted)] max-w-sm"></p>
-          </div>
-          
-          <div class="flex flex-col sm:flex-row gap-3 mt-6">
-            <button id="btn-restart" class="flex-1 py-3 px-4 rounded-lg bg-[var(--accent)] text-slate-900 font-bold hover:bg-[var(--accent-hover)] transition focus:outline-none">
-              Luyện tập lại
-            </button>
-            <button onclick="app.showDashboard()" class="flex-1 py-3 px-4 rounded-lg border border-[var(--border)] hover:bg-slate-100 dark:hover:bg-slate-800 text-[var(--text-main)] font-semibold transition focus:outline-none">
-              Về Trang chủ
-            </button>
+            
+            <!-- Right Column: Video Meme Card -->
+            <div class="bg-white dark:bg-slate-900 border border-[var(--border)] rounded-2xl p-4 shadow-xl flex flex-col items-center w-full">
+              <div class="relative w-full max-h-[400px] overflow-hidden rounded-xl bg-slate-50 dark:bg-slate-950 flex items-center justify-center border border-[var(--border)]">
+                <video id="end-video-player" class="w-full h-auto max-h-[400px] object-contain rounded-lg border-0 outline-none" autoplay loop muted playsinline></video>
+              </div>
+            </div>
+
           </div>
         </div>
 
+      </div>
+
+      <!-- Right Column: Meme Card (Popup) -->
+      <div id="quiz-meme-card" class="hidden w-full max-w-sm bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] p-6 shadow-2xl flex flex-col items-center self-center lg:self-start">
+        <div id="meme-streak-badge" class="mb-3 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider"></div>
+        <div class="relative w-full max-h-[300px] overflow-hidden rounded-xl mb-4 bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-[var(--border)]">
+          <img id="meme-image" src="" alt="Meme Mèo" class="w-full h-full object-contain">
+        </div>
+        <div id="meme-message" class="text-sm font-semibold text-center mb-4 text-[var(--text-main)]"></div>
+        <button type="button" id="btn-meme-next" class="w-full py-3 px-4 rounded-xl bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 font-bold hover:opacity-90 transition active:scale-95">
+          Tiếp theo →
+        </button>
       </div>
     </section>
 
@@ -193,6 +218,10 @@
       <p class="mt-1 font-bold text-red-500">LÊ GIA BẢO KD23/A2</p>
     </div>
   </footer>
+
+
+  <!-- Canvas Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
   <!-- Application script loads -->
   <script src="data.js"></script>

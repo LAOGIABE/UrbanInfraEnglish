@@ -1,6 +1,70 @@
 // Core Application Logic for UrbanInfraEnglish SPA
 // Relies on data.js for vocabulary and reading database
 
+const MEME_RESOURCES = {
+  file1: [
+    '../final/file 1/f1 (2).jpg',
+    '../final/file 1/f1 (3).jpg',
+    '../final/file 1/f1 (4).jpg',
+    '../final/file 1/f1 (5).jpg',
+    '../final/file 1/f1 (6).jpg',
+    '../final/file 1/f1.jpg'
+  ],
+  file2: [
+    '../final/file 2/f2 (2).jpg',
+    '../final/file 2/f2 (3).jpg',
+    '../final/file 2/f2 (4).jpg',
+    '../final/file 2/f2 (5).jpg',
+    '../final/file 2/f2 (6).jpg',
+    '../final/file 2/f2 (7).jpg',
+    '../final/file 2/f2 (8).jpg',
+    '../final/file 2/f2 (9).jpg',
+    '../final/file 2/f2 (10).jpg',
+    '../final/file 2/f2.jpg'
+  ],
+  file3: [
+    '../final/file 3/f3 (2).jpg',
+    '../final/file 3/f3 (3).jpg',
+    '../final/file 3/f3 (4).jpg',
+    '../final/file 3/f3 (5).jpg',
+    '../final/file 3/f3.jpg'
+  ],
+  file4: [
+    '../final/file 4/f4 (2).jpg',
+    '../final/file 4/f4 (3).jpg',
+    '../final/file 4/f4 (4).jpg',
+    '../final/file 4/f4 (5).jpg',
+    '../final/file 4/f4.jpg'
+  ],
+  file5: [
+    '../final/file 5/f5 (2).jpg',
+    '../final/file 5/f5 (3).jpg',
+    '../final/file 5/f5 (4).jpg',
+    '../final/file 5/f5 (5).jpg',
+    '../final/file 5/f5.jpg'
+  ],
+  file6: [
+    '../final/file 6/f6 (2).jpg',
+    '../final/file 6/f6 (3).jpg',
+    '../final/file 6/f6 (4).jpg',
+    '../final/file 6/f6 (5).jpg',
+    '../final/file 6/f6 (6).jpg',
+    '../final/file 6/f6 (7).jpg',
+    '../final/file 6/f6 (8).jpg',
+    '../final/file 6/f6.jpg'
+  ],
+  videos: [
+    '../final/video/1.mp4',
+    '../final/video/2.mp4',
+    '../final/video/3.mp4',
+    '../final/video/4.mp4',
+    '../final/video/5.mp4',
+    '../final/video/6.mp4',
+    '../final/video/7.mp4',
+    '../final/video/8.mp4'
+  ]
+};
+
 class QuizApp {
   constructor() {
     this.currentChapter = null;
@@ -8,6 +72,8 @@ class QuizApp {
     this.currentIndex = 0;
     this.score = { correct: 0, total: 0 };
     this.isAnswered = false;
+    this.streakDung = 0;
+    this.streakSai = 0;
     this.theme = localStorage.getItem('urban_infra_theme') || 'light';
     
     this.init();
@@ -65,6 +131,16 @@ class QuizApp {
     this.resultsPercentage = document.getElementById('results-percentage');
     this.resultsScore = document.getElementById('results-score');
     this.btnRestart = document.getElementById('btn-restart');
+
+    // Meme Card Elements
+    this.memeCard = document.getElementById('quiz-meme-card');
+    this.memeImage = document.getElementById('meme-image');
+    this.memeStreakBadge = document.getElementById('meme-streak-badge');
+    this.memeMessage = document.getElementById('meme-message');
+    this.memeNextBtn = document.getElementById('btn-meme-next');
+
+    // Video End Card Elements
+    this.videoPlayer = document.getElementById('end-video-player');
   }
 
   bindEvents() {
@@ -74,15 +150,63 @@ class QuizApp {
     // Vocab logic
     this.vocabCheckBtn.addEventListener('click', () => this.checkVocabAnswer());
     this.vocabNextBtn.addEventListener('click', () => this.nextQuestion());
-    this.vocabInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        if (!this.isAnswered) {
-          this.checkVocabAnswer();
-        } else {
-          this.nextQuestion();
-        }
+
+    // ========================================================
+    // ENTER KEY 2-BEAT LOGIC
+    // Beat 1: Enter triggers Check when not yet answered
+    // Beat 2: Enter triggers Next when already answered
+    // Uses keyup on document to transition state, while preventing 
+    // native browser click behaviors on buttons.
+    // ========================================================
+    this._lastEnterTime = 0;
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter') return;
+      console.log('DEBUG: Global keydown Enter caught. isAnswered:', this.isAnswered, 'target:', e.target);
+      // Only act when quiz view is visible and vocab card is active
+      if (this.quizView.classList.contains('hidden')) return;
+      if (this.vocabCard.classList.contains('hidden')) return;
+
+      e.preventDefault();
+
+      // Timestamp debounce: ignore Enter presses within 400ms of last action
+      const now = Date.now();
+      console.log('DEBUG: Debounce check. Diff:', now - this._lastEnterTime);
+      if (now - this._lastEnterTime < 450) {
+        console.log('DEBUG: Enter ignored due to debounce');
+        return;
+      }
+      this._lastEnterTime = now;
+
+      if (!this.isAnswered) {
+        console.log('DEBUG: Triggering checkVocabAnswer()');
+        this.checkVocabAnswer();
+      } else {
+        console.log('DEBUG: Triggering nextQuestion()');
+        this.nextQuestion();
       }
     });
+
+    // Prevent default Enter behavior on input (submitting form)
+    this.vocabInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+      }
+    });
+
+    // Crucial: Prevent Enter key from triggering native click on the buttons
+    const preventButtonEnter = (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+    this.vocabCheckBtn.addEventListener('keydown', preventButtonEnter);
+    this.vocabCheckBtn.addEventListener('keyup', preventButtonEnter);
+    this.vocabNextBtn.addEventListener('keydown', preventButtonEnter);
+    this.vocabNextBtn.addEventListener('keyup', preventButtonEnter);
+    this.memeNextBtn.addEventListener('keydown', preventButtonEnter);
+    this.memeNextBtn.addEventListener('keyup', preventButtonEnter);
 
     // Sentence logic
     this.sentenceSampleBtn.addEventListener('click', () => this.revealSentenceSample());
@@ -93,6 +217,10 @@ class QuizApp {
     
     // Theme toggle
     this.themeToggle.addEventListener('click', () => this.toggleTheme());
+
+    // Meme next click
+    this.memeNextBtn.addEventListener('click', () => this.nextQuestion());
+
   }
 
   toggleTheme() {
@@ -189,6 +317,10 @@ class QuizApp {
     this.currentChapter = chaptersData.find(c => c.id === chapterId);
     if (!this.currentChapter) return;
 
+    this.streakDung = 0;
+    this.streakSai = 0;
+    this.hideMeme();
+
     // Show Quiz View, Hide Dashboard
     this.dashboardView.classList.add('hidden');
     this.quizView.classList.remove('hidden');
@@ -260,6 +392,7 @@ class QuizApp {
       this.vocabEng.textContent = currentQ.data.word;
       this.vocabInput.value = '';
       this.vocabInput.disabled = false;
+      this.vocabInput.readOnly = false;
       this.vocabInput.className = "w-full px-4 py-3 rounded-lg border border-[var(--border)] bg-[var(--bg-app)] text-[var(--text-main)] font-medium transition focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/20";
       
       this.vocabCheckBtn.classList.remove('hidden');
@@ -293,47 +426,60 @@ class QuizApp {
   }
 
   checkVocabAnswer() {
+    console.log('DEBUG: checkVocabAnswer() called');
     const currentQ = this.questions[this.currentIndex];
     const userAnswer = this.vocabInput.value;
     
     const cleanUser = this.normalizeText(userAnswer);
     
-    // Check matches
+    // Check matches against acceptable meanings OR the primary meaning
     const isCorrect = currentQ.data.meanings.some(meaning => {
       return this.normalizeText(meaning) === cleanUser;
-    });
+    }) || this.normalizeText(currentQ.data.primaryMeaning) === cleanUser;
 
     this.isAnswered = true;
-    this.vocabInput.disabled = true;
+    this.vocabInput.readOnly = true;
     this.vocabCheckBtn.classList.add('hidden');
     this.vocabNextBtn.classList.remove('hidden');
-    this.vocabNextBtn.focus();
+    // Don't focus the Next button here — the global Enter key handler
+    // manages the 2-beat flow, and focusing here would cause keyup to
+    // auto-click the button on the same Enter press.
 
     this.vocabFeedback.classList.remove('hidden');
     
     if (isCorrect) {
       this.score.correct++;
+      this.streakDung++;
+      this.streakSai = 0;
+      
       this.vocabInput.classList.add('border-[var(--success)]', 'bg-[var(--success-bg)]');
       this.vocabFeedback.innerHTML = `
         <div class="flex items-center space-x-2 text-[var(--success)] font-semibold mb-1">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-          <span>Chính xác!</span>
+          <span>Chính xác! (Streak: ${this.streakDung} 🔥)</span>
         </div>
       `;
       // Soft success glow interaction
       this.vocabCard.classList.add('animate-success-glow');
     } else {
+      this.streakSai++;
+      this.streakDung = 0;
+      
       this.vocabInput.classList.add('border-[var(--error)]', 'bg-[var(--error-bg)]', 'animate-shake');
       this.vocabFeedback.innerHTML = `
         <div class="flex items-center space-x-2 text-[var(--error)] font-semibold mb-2">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-          <span>Chưa chính xác!</span>
+          <span>Chưa chính xác! (Streak sai: ${this.streakSai} 😿)</span>
         </div>
         <div class="text-sm border-l-4 border-[var(--accent)] pl-3 py-1 bg-[var(--accent-light)] dark:bg-cyan-950/20 text-[var(--text-main)] rounded-r-md">
           Đáp án đúng là: <strong class="text-[var(--accent)]">${currentQ.data.primaryMeaning}</strong>
         </div>
       `;
     }
+
+    // Show meme popup
+    const memeUrl = this.getMemeImage(isCorrect);
+    this.showMeme(memeUrl, isCorrect);
   }
 
   revealSentenceSample() {
@@ -345,6 +491,10 @@ class QuizApp {
   }
 
   nextQuestion() {
+    console.log('DEBUG: nextQuestion() called');
+    // Hide meme modal if it was open
+    this.hideMeme();
+
     // Clean animations classes before transitioning
     this.vocabCard.classList.remove('animate-success-glow');
     this.vocabCard.classList.remove('animate-shake');
@@ -355,10 +505,11 @@ class QuizApp {
   }
 
   showResults() {
+    this.hideMeme();
     this.vocabCard.classList.add('hidden');
     this.sentenceCard.classList.add('hidden');
     this.resultsCard.classList.remove('hidden');
-    this.resultsCard.className = "fade-in bg-[var(--bg-card)] shadow-md rounded-xl p-8 border border-[var(--border)] text-center relative overflow-hidden";
+    this.resultsCard.className = "fade-in bg-[var(--bg-card)] shadow-md rounded-xl p-8 border border-[var(--border)] relative overflow-hidden max-w-4xl mx-auto w-full";
     
     // Calculate percentage based on vocabulary quiz mode answers
     // Let's count how many vocabulary questions were answered correctly
@@ -374,6 +525,127 @@ class QuizApp {
     if (completionPercentage > previousBest) {
       localStorage.setItem(`urban_infra_progress_ch_${this.currentChapter.id}`, completionPercentage);
     }
+
+    // Play random celebration video directly inside results card
+    const videos = MEME_RESOURCES.videos;
+    if (videos.length > 0) {
+      const randomVideo = videos[Math.floor(Math.random() * videos.length)];
+      this.videoPlayer.src = randomVideo;
+      this.videoPlayer.load();
+      this.videoPlayer.play().catch(err => {
+        console.log("Autoplay was prevented on results card:", err);
+      });
+    }
+
+    // Trigger confetti effect
+    this.triggerConfetti();
+  }
+
+  getMemeImage(isCorrect) {
+    let list = [];
+    if (isCorrect) {
+      if (this.streakDung === 1) {
+        list = MEME_RESOURCES.file4;
+      } else if (this.streakDung === 2) {
+        list = MEME_RESOURCES.file5;
+      } else if (this.streakDung === 3) {
+        list = MEME_RESOURCES.file6;
+      } else {
+        list = [...MEME_RESOURCES.file4, ...MEME_RESOURCES.file5, ...MEME_RESOURCES.file6];
+      }
+    } else {
+      if (this.streakSai === 1) {
+        list = MEME_RESOURCES.file1;
+      } else if (this.streakSai === 2) {
+        list = MEME_RESOURCES.file2;
+      } else if (this.streakSai === 3) {
+        list = MEME_RESOURCES.file3;
+      } else {
+        list = [...MEME_RESOURCES.file1, ...MEME_RESOURCES.file2, ...MEME_RESOURCES.file3];
+      }
+    }
+    
+    if (list.length === 0) return '';
+    const randomIndex = Math.floor(Math.random() * list.length);
+    return list[randomIndex];
+  }
+
+  showMeme(imageUrl, isCorrect) {
+    if (!imageUrl) return;
+    
+    this.memeImage.src = imageUrl;
+    
+    // Set dynamic badge and encouraging/funny messages
+    if (isCorrect) {
+      this.memeStreakBadge.textContent = `Streak: ${this.streakDung} 🔥`;
+      this.memeStreakBadge.className = "mb-3 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400";
+      
+      const positiveMessages = [
+        "Quá đỉnh! Tiếp tục phát huy nhé! 🚀",
+        "Tuyệt vời ông mặt trời! ☀️",
+        "Bạn là thiên tài kỹ thuật hạ tầng! 🤓",
+        "Không thể ngăn cản! Chuỗi đúng đang tăng! 💪"
+      ];
+      this.memeMessage.textContent = positiveMessages[Math.min(this.streakDung - 1, positiveMessages.length - 1)];
+    } else {
+      this.memeStreakBadge.textContent = `Streak sai: ${this.streakSai} 😿`;
+      this.memeStreakBadge.className = "mb-3 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-100 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400";
+      
+      const negativeMessages = [
+        "Đừng nản chí, làm lại nào! 💪",
+        "Hơi tiếc một chút, cố lên nhé! ❤️",
+        "Ôi không, mèo con đang khóc kìa! 😿",
+        "Tập trung hơn ở câu tiếp theo nhé! 🧠"
+      ];
+      this.memeMessage.textContent = negativeMessages[Math.min(this.streakSai - 1, negativeMessages.length - 1)];
+    }
+    
+    // Show meme card
+    if (this.memeCard) {
+      this.memeCard.classList.remove('hidden');
+      this.memeCard.classList.remove('animate-spring-bounce');
+      void this.memeCard.offsetWidth; // Trigger reflow
+      this.memeCard.classList.add('animate-spring-bounce');
+    }
+
+    // Don't auto-focus meme button — let the vocabNextBtn keep focus
+    // so Enter key works naturally for the 2-beat flow
+  }
+
+  hideMeme() {
+    if (this.memeCard) {
+      this.memeCard.classList.add('hidden');
+    }
+  }
+
+  triggerConfetti() {
+    if (typeof confetti === 'function') {
+      // First main burst
+      confetti({
+        particleCount: 80,
+        spread: 60,
+        origin: { y: 0.6 }
+      });
+
+      // Side cannons for 2.5 seconds
+      const duration = 2500;
+      const animationEnd = Date.now() + duration;
+      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 99 };
+
+      const randomInRange = (min, max) => Math.random() * (max - min) + min;
+
+      const interval = setInterval(() => {
+        const timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+          return clearInterval(interval);
+        }
+
+        const particleCount = 20 * (timeLeft / duration);
+        confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+        confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+      }, 250);
+    }
   }
 
   // Utilities
@@ -388,10 +660,11 @@ class QuizApp {
   normalizeText(str) {
     if (!str) return '';
     return str
-      .trim()
       .toLowerCase()
+      .replace(/[\/\\,;]/g, ' ') // Replace separators like /, \, comma, semicolon with spaces first
+      .replace(/[.!$%\^&\*:{}=\-_`~()\[\]?]/g, '') // Strip remaining punctuation
+      .trim()
       .replace(/\s+/g, ' ') // Collapse multiple spaces
-      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()\[\]?]/g, '') // Strip punctuation
       .normalize('NFC'); // Normalize unicode accents for Vietnamese
   }
 }
